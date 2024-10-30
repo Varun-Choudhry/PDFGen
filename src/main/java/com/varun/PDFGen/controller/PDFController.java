@@ -18,7 +18,7 @@ public class PDFController {
 	@PostMapping("/pdf/generate")
 	public ResponseEntity<byte[]> generatePDF(@RequestBody Invoice invoice) {
 		
-		invoicePdfGenerator.generatePDF(invoice);
+		invoicePdfGenerator.generatePdf(invoice);
 		
 		return ResponseEntity.ok(null);
 	}
