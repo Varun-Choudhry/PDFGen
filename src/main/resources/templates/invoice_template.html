@@ -1,16 +1,112 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 5px;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            max-width: 210mm;
+        }
+
+        .container {
+            border: 1px solid #333;
+            padding: 10px;
+            width: 100%;
+            max-width: 180mm;
+            box-sizing: border-box;
+            margin: 0 auto;
+        }
+
+      /* Table layout for header section */
+        .header-table {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .header-table td {
+            width: 50%; /* Each cell takes half the width */
+            vertical-align: top;
+        }
+
+        .table-container {
+            margin-top: 10px;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+
+        th, td {
+            padding: 5px;
+            text-align: left;
+            border: 1px solid #333;
+            font-size: 10px;
+            width: 25%;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        .right {
+            text-align: right;
+        }
+    </style>
+</head>
 <body>
-<div style="padding: 5%">
-	
-	<div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 0;  border: 1px solid black; width: 100%; height:30%; ">
-		<div style="border: 1px solid red; grid-gap: 0; width: 50%; font-size: 50px;" th:text="'Seller: '+ ${Invoice.sellerName} "></div>
-    	<div style="grid-gap: 0;width: 50%;border: 1px solid red;  ">Buyer</div>
-	</div>
+    <div class="container">
+        <!-- Header Section with Table Layout -->
+        <table class="header-table">
+            <tr>
+                <td>
+                    <p><strong>Seller:</strong></p>
+                    <p th:text="${invoice.sellerName}">Seller Name</p>
+                    <p th:text="${invoice.sellerAddress}">Seller Address</p>
+                    <p th:text="'GSTIN: ' + ${invoice.sellerGstin}">GSTIN</p>
+                </td>
+                <td>
+                    <p><strong>Buyer:</strong></p>
+                    <p th:text="${invoice.buyerName}">Buyer Name</p>
+                    <p th:text="${invoice.buyerAddress}">Buyer Address</p>
+                    <p th:text="'GSTIN: ' + ${invoice.buyerGstin}">GSTIN</p>
+                </td>
+            </tr>
+        </table>
 
-    
-    
-</div>
-
-
+        <!-- Table Section for Items -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${invoice.items}">
+                        <td th:text="${item.itemName}">Item Name</td>
+                        <td class="right" th:text="${item.itemQuantity}">Quantity</td>
+                        <td class="right" th:text="${item.itemRate}">Rate</td>
+                        <td class="right" th:text="${item.itemTotalAmount}">Amount</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>

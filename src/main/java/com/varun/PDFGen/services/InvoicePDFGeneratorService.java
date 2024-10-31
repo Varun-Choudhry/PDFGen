@@ -1,15 +1,13 @@
 package com.varun.PDFGen.services;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import com.itextpdf.text.DocumentException;
 import com.varun.PDFGen.model.Invoice;
 import com.varun.PDFGen.utils.PDFGeneratorUtil;
 
@@ -18,41 +16,28 @@ public class InvoicePDFGeneratorService implements PDFGeneratorService<Invoice> 
 
 	@Autowired
 	PDFGeneratorUtil pdfGeneratorUtil;	
+	private Integer uniqueInvoiceId;
 	
 	Context context = new Context();
+	private final SpringTemplateEngine templateEngine;
 	
+	public InvoicePDFGeneratorService(SpringTemplateEngine templateEngine) {
+        this.templateEngine = templateEngine;
+    }
 	@Override
-	public String generatePdf(Invoice invoice) {
+	public byte[] generatePdf(Model model) throws FileNotFoundException {
 		
-		
-		context.setVariable("Invoice", invoice);
-		String parsedHtml = parsePdfInput(context);
-	    try {
-	    	pdfGeneratorUtil.generatePdfFromHtml(parsedHtml, "Invoice");
-		} catch (DocumentException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	    return null;
+		 	Context context = new Context();
+	        model.asMap().forEach(context::setVariable);
+	        String htmlContent = templateEngine.process("invoice_template", context);
+	        return pdfGeneratorUtil.generatePdfFromHtml(htmlContent, "generated_invoice.pdf");
+	        
+	        
 	}
 
-	@Override
-	public String parsePdfInput(Context context) {
-		
-		ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-	    templateResolver.setSuffix(".html");
-	    templateResolver.setTemplateMode(TemplateMode.HTML);
-	    templateResolver.setPrefix("templates/");
-	    SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-	    templateEngine.setTemplateResolver(templateResolver);
 
-	    
 
-	    return templateEngine.process("invoice_template", context);
-		
-	}
+	
 	
 
 }
