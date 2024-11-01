@@ -1,6 +1,7 @@
 package com.varun.PDFGen.model;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -69,5 +70,11 @@ public class Invoice {
 	}
 	public void setItems(List<Item> items) {
 		this.items = items;
+	}
+	@Override
+	public int hashCode()
+	{
+		this.items.sort((i1, i2) -> i1.getItemName().compareTo(i2.getItemName()));
+		return Objects.hash(this.buyerGstin,this.items,this.sellerGstin);
 	}
 }

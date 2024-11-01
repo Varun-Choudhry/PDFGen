@@ -7,8 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.ExtendedModelMap;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,14 +24,10 @@ public class PDFController {
 	public ResponseEntity<byte[]> generatePDF(@RequestBody Invoice invoice) throws FileNotFoundException {
 		
 		try {
-            // Prepare the model data for the Thymeleaf template
-            Model model = new ExtendedModelMap();
-            model.addAttribute("invoice", invoice);
-
-            // Generate the PDF as a byte array using the service
-            byte[] pdfContent = invoicePdfGenerator.generatePdf(model);
-
-            // Set headers to download the PDF as an attachment
+            byte[] pdfContent = invoicePdfGenerator.getPdfInvoiceStream(invoice);
+			
+			
+		
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "invoice.pdf");
