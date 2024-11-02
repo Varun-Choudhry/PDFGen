@@ -28,7 +28,17 @@ public class Invoice {
 	@JsonProperty("items")
 	private List<Item> items;
 	
-	
+	public Invoice(String sellerName, String sellerGstin, String sellerAddress, String buyerName, String buyerGstin,
+			String buyerAddress, List<Item> items) {
+		super();
+		this.sellerName = sellerName;
+		this.sellerGstin = sellerGstin;
+		this.sellerAddress = sellerAddress;
+		this.buyerName = buyerName;
+		this.buyerGstin = buyerGstin;
+		this.buyerAddress = buyerAddress;
+		this.items = items;
+	}
 	public String getSellerName() {
 		return sellerName;
 	}
@@ -56,6 +66,7 @@ public class Invoice {
 	public String getBuyerGstin() {
 		return buyerGstin;
 	}
+	
 	public void setBuyerGstin(String buyerGstin) {
 		this.buyerGstin = buyerGstin;
 	}

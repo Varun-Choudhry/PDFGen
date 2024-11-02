@@ -17,6 +17,14 @@ public class Item {
 	private double itemTotalAmount;
 	
 	
+	public Item(String itemName, String itemQuantity, double itemRate, double itemTotalAmount) {
+		super();
+		this.itemName = itemName;
+		this.itemQuantity = itemQuantity;
+		this.itemRate = itemRate;
+		this.itemTotalAmount = itemTotalAmount;
+	}
+	
 	public String getItemName() {
 		return itemName;
 	}

@@ -3,6 +3,7 @@ package com.varun.PDFGen.controller;
 import java.io.FileNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,17 +22,17 @@ public class PDFController {
 	InvoicePDFGeneratorService invoicePdfGenerator;
 	
 	@PostMapping("/pdf/generate")
-	public ResponseEntity<byte[]> generatePDF(@RequestBody Invoice invoice) throws FileNotFoundException {
+	public ResponseEntity<Resource> generatePDF(@RequestBody Invoice invoice) throws FileNotFoundException {
 		
 		try {
-            byte[] pdfContent = invoicePdfGenerator.getPdfInvoiceStream(invoice);
+            Resource pdfContent = invoicePdfGenerator.getPdfInvoiceStream(invoice);
 			
 			
 		
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "invoice.pdf");
-            headers.setContentLength(pdfContent.length);
+            headers.setContentLength(pdfContent.contentLength());
 
             return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
 

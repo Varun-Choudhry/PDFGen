@@ -2,7 +2,7 @@ package com.varun.PDFGen.services;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.system.ApplicationHome;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
@@ -32,7 +34,7 @@ public class InvoicePDFGeneratorService {
 	private final PDFGeneratorUtil pdfGeneratorUtil;	
 	private final GeneratedInvoiceRepository generatedInvoiceRepository;
 	
-	Context context = new Context();
+	//Context context = new Context();
 	private final SpringTemplateEngine templateEngine;
 	
 	public InvoicePDFGeneratorService(SpringTemplateEngine templateEngine,PDFGeneratorUtil pdfGeneratorUtil, 
@@ -40,32 +42,34 @@ public class InvoicePDFGeneratorService {
         this.pdfGeneratorUtil = pdfGeneratorUtil;
 		this.generatedInvoiceRepository = generatedInvoiceRepository;
 		this.templateEngine = templateEngine;
+	
     }
 		
 	
-	public byte[] getPdfbyId(String id) throws IOException
+	public Resource getPdfbyId(String id) throws IOException
 	{
 		Optional<GeneratedInvoice> existingInvoice = generatedInvoiceRepository.findById(id);
 		if(existingInvoice.isPresent())
 		{
 			Path path = Paths.get(existingInvoice.get().getInvoicePath());
-			return Files.readAllBytes(path);
+			Resource resource = new UrlResource(path.toUri());
+			return resource;
 		}
 		return null;
 	}
 	
 	
 	
-	public byte[] generatePdf(Model model, String filePath) throws FileNotFoundException {
+	public Resource generatePdf(Model model, String filePath) throws FileNotFoundException, MalformedURLException {
 		
 		 	Context context = new Context();
 	        model.asMap().forEach(context::setVariable);
 	        String htmlContent = templateEngine.process("invoice_template", context);
-	        
-	        return pdfGeneratorUtil.generatePdfFromHtml(htmlContent, filePath);
+	        Resource resource = new UrlResource(pdfGeneratorUtil.generatePdfFromHtml(htmlContent, filePath).toUri());
+	        return resource;
 	}        
 	
-	public byte[] generateAndInsertPdf(Model model, String id, String invoicePath) throws FileNotFoundException
+	public Resource generateAndInsertPdf(Model model, String id, String invoicePath) throws FileNotFoundException, MalformedURLException
 	{
 		GeneratedInvoice invoice = new GeneratedInvoice(id, invoicePath);
 		generatedInvoiceRepository.save(invoice);
@@ -97,18 +101,18 @@ public class InvoicePDFGeneratorService {
 
 
 
-	public byte[] getPdfInvoiceStream(Invoice invoice) throws IOException {
+	public Resource getPdfInvoiceStream(Invoice invoice) throws IOException {
 		
 		String invoiceId = generateInvoiceId(invoice.getBuyerGstin(),  invoice.getSellerGstin(), invoice.getItems());
-		byte[] pdfContentStream= getPdfbyId(invoiceId);
-		if (pdfContentStream!=null)
-			return pdfContentStream;
+		Resource pdfContentResource= getPdfbyId(invoiceId);
+		if (pdfContentResource!=null)
+			return pdfContentResource;
 		Model model = new ExtendedModelMap();
         model.addAttribute("invoice", invoice);
         String invoicePath = createInvoicePath(invoiceId);
-        pdfContentStream = generateAndInsertPdf(model, invoiceId, invoicePath);
+        pdfContentResource = generateAndInsertPdf(model, invoiceId, invoicePath);
 		
-		return pdfContentStream;
+		return pdfContentResource;
 	}
 
 
