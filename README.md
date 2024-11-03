@@ -39,5 +39,5 @@ same data is provided instead of generating it again.
 
 
 ## Notes
-* Uses H2 database for persistance
+* Uses H2 database for persistence
 * Uses SHA-256 hash to identify duplicate requests
