@@ -26,9 +26,6 @@ public class PDFController {
 		
 		try {
             Resource pdfContent = invoicePdfGenerator.getPdfInvoiceStream(invoice);
-			
-			
-		
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "invoice.pdf");
